@@ -294,8 +294,10 @@ void HDDisplay::addGauge()
             label = keySplit.join(".");
         }
         QString unit = units.value(key);
-        if (unit.contains("deg") || unit.contains("rad")) {
+        if (unit.contains("deg")) {
             items.append(QString("%1,%2,%3,%4,%5,s").arg("-180").arg(key).arg(unit).arg("+180").arg(label));
+        } else if (unit.contains("rad")) {
+            items.append(QString("%1,%2,%3,%4,%5,s").arg("-3.14159").arg(key).arg(unit).arg("+3.14159").arg(label));
         } else {
             items.append(QString("%1,%2,%3,%4,%5").arg("0").arg(key).arg(unit).arg("+100").arg(label));
         }
