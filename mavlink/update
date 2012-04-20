@@ -10,5 +10,5 @@ rm -rf  VERSION mavlink* include lib share *.zip
 wget http://github.com/downloads/mavlink/mavlink/mavlink-${MAVLINK_VERSION}.zip
 unzip mavlink-${MAVLINK_VERSION}.zip
 mv mavlink-${MAVLINK_VERSION}/* .
-rm -rf  mavlink* share lib
+rm -rf  mavlink*
 echo $MAVLINK_VERSION > VERSION
