@@ -398,7 +398,7 @@ contains(DEPENDENCIES_PRESENT, protobuf):contains(MAVLINK_CONF, pixhawk) {
     message("Including headers for Protocol Buffers")
 
     # Enable only if protobuf is available
-    HEADERS += mavlink/include/v1.0/pixhawk/pixhawk.pb.h \
+    HEADERS += $$MAVLINKPATH/include/mavlink/v1.0/pixhawk/pixhawk.pb.h \
         src/ui/map3D/ObstacleGroupNode.h \
         src/ui/map3D/GLOverlayGeode.h
 }
@@ -550,7 +550,7 @@ contains(DEPENDENCIES_PRESENT, protobuf):contains(MAVLINK_CONF, pixhawk) {
     message("Including sources for Protocol Buffers")
 
     # Enable only if protobuf is available
-    SOURCES += mavlink/share/mavlink/src/v1.0/pixhawk/pixhawk.pb.cc \
+    SOURCES += $$MAVLINKPATH/share/mavlink/src/v1.0/pixhawk/pixhawk.pb.cc \
         src/ui/map3D/ObstacleGroupNode.cc \
         src/ui/map3D/GLOverlayGeode.cc
 }
