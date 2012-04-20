@@ -51,7 +51,7 @@ MOC_DIR = $${BUILDDIR}/moc
 UI_DIR = $${BUILDDIR}/ui
 RCC_DIR = $${BUILDDIR}/rcc
 MAVLINK_CONF = ""
-MAVLINKPATH = $$BASEDIR/thirdParty/mavlink/include/mavlink/v1.0
+MAVLINKPATH = $$BASEDIR/mavlink/include/mavlink/v1.0
 DEFINES += MAVLINK_NO_DATA
 
 win32 {
@@ -550,7 +550,7 @@ contains(DEPENDENCIES_PRESENT, protobuf):contains(MAVLINK_CONF, pixhawk) {
     message("Including sources for Protocol Buffers")
 
     # Enable only if protobuf is available
-    SOURCES += mavlink/src/v1.0/pixhawk/pixhawk.pb.cc \
+    SOURCES += mavlink/share/mavlink/src/v1.0/pixhawk/pixhawk.pb.cc \
         src/ui/map3D/ObstacleGroupNode.cc \
         src/ui/map3D/GLOverlayGeode.cc
 }
