@@ -292,29 +292,29 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, QByteArray b)
             if (m_loggingEnabled && m_logfile)
             {
                 char buf[MAVLINK_MAX_PACKET_LEN];
-		const int len = message.len+MAVLINK_NUM_NON_PAYLOAD_BYTES;
-		quint64 timeusec = QGC::groundTimeUsecs();
+        		const int len = message.len+MAVLINK_NUM_NON_PAYLOAD_BYTES;
+        		quint64 timeusec = QGC::groundTimeUsecs();
                 mavlink_msg_to_send_buffer((uint8_t *)buf, &message);
 
-		// each message is prefixed by a timestamp. The
-		// timestamp is a 8 byte big-endian time since
-		// 1/1/1970 in microseconds. We use a QDataStream as a
-		// convenient formatting tool.
-		QDataStream logstream(m_logfile);
-		logstream << timeusec;
+        		// each message is prefixed by a timestamp. The
+        		// timestamp is a 8 byte big-endian time since
+        		// 1/1/1970 in microseconds. We use a QDataStream as a
+        		// convenient formatting tool.
+        		QDataStream logstream(m_logfile);
+        		logstream << timeusec;
 
-		// now the raw message bytes
-		if (logstream.writeRawData(buf, len) != len)
+        		// now the raw message bytes
+        		if (logstream.writeRawData(buf, len) != len)
                 {
                     emit protocolStatusMessage(tr("MAVLink Logging failed"), tr("Could not write to file %1, disabling logging.").arg(m_logfile->fileName()));
                     // Stop logging
                     enableLogging(false);
                 }
 
-		// the QFile is buffered, which causes problems with
-		// truncation if qgc dies, or someone is trying to
-		// follow the logfile in realtime, so flush
-		m_logfile->flush();
+        		// the QFile is buffered, which causes problems with
+        		// truncation if qgc dies, or someone is trying to
+        		// follow the logfile in realtime, so flush
+        		m_logfile->flush();
             }
 
             // ORDER MATTERS HERE!
