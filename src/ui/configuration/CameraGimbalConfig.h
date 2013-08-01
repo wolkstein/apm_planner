@@ -12,6 +12,8 @@ class CameraGimbalConfig : public AP2ConfigWidget
 public:
     explicit CameraGimbalConfig(QWidget *parent = 0);
     ~CameraGimbalConfig();
+
+    void setMountParameters(int channel);
 private slots:
     void parameterChanged(int uas, int component, QString parameterName, QVariant value);
     void updateTilt();
@@ -21,6 +23,10 @@ private slots:
     void updateRetractAngles();
     void updateNeutralAngles();
     void updateControlAngles();
+
+private:
+    void setRCParameters(MAV_COMPONENT component, QString channel, int min, int max, bool reverse);
+    void setMountParameters(MAV_COMPONENT component, QString type, int minAngle, int maxAngle, int inChannel);
 private:
     Ui::CameraGimbalConfig ui;
     QString m_shutterPrefix;

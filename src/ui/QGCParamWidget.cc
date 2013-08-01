@@ -1007,6 +1007,7 @@ void QGCParamWidget::requestParameterUpdate(int component, const QString& parame
  */
 void QGCParamWidget::setParameter(int component, QString parameterName, QVariant value)
 {
+    qDebug() << "QGCParamWidget::SetParameter" << parameterName << value << component;
     if (paramMin.contains(parameterName) && value.toDouble() < paramMin.value(parameterName))
     {
         statusLabel->setText(tr("REJ. %1 < min").arg(value.toDouble()));

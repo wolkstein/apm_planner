@@ -6,59 +6,62 @@
 CameraGimbalConfig::CameraGimbalConfig(QWidget *parent) : AP2ConfigWidget(parent)
 {
     ui.setupUi(this);
-    ui.tiltChannelComboBox->addItem(tr("Disable"));
-    ui.tiltChannelComboBox->addItem("RC5");
-    ui.tiltChannelComboBox->addItem("RC6");
-    ui.tiltChannelComboBox->addItem("RC7");
-    ui.tiltChannelComboBox->addItem("RC8");
-    ui.tiltChannelComboBox->addItem("RC10");
-    ui.tiltChannelComboBox->addItem("RC11");
+    ui.tiltChannelComboBox->addItem(tr("Disable", 0));
+    ui.tiltChannelComboBox->addItem("RC5", 5);
+    ui.tiltChannelComboBox->addItem("RC6", 6);
+    ui.tiltChannelComboBox->addItem("RC7", 7);
+    ui.tiltChannelComboBox->addItem("RC8", 8);
+    ui.tiltChannelComboBox->addItem("RC10", 9);
+    ui.tiltChannelComboBox->addItem("RC11", 10);
 
-    ui.tiltInputChannelComboBox->addItem(tr("Disable"));
-    ui.tiltInputChannelComboBox->addItem("RC5");
-    ui.tiltInputChannelComboBox->addItem("RC6");
-    ui.tiltInputChannelComboBox->addItem("RC7");
-    ui.tiltInputChannelComboBox->addItem("RC8");
+    ui.tiltInputChannelComboBox->addItem(tr("Disable", 0));
+    ui.tiltInputChannelComboBox->addItem("RC5", 5);
+    ui.tiltInputChannelComboBox->addItem("RC6", 6);
+    ui.tiltInputChannelComboBox->addItem("RC7", 7);
+    ui.tiltInputChannelComboBox->addItem("RC8", 8);
 
-    ui.rollChannelComboBox->addItem(tr("Disable"));
-    ui.rollChannelComboBox->addItem("RC5");
-    ui.rollChannelComboBox->addItem("RC6");
-    ui.rollChannelComboBox->addItem("RC7");
-    ui.rollChannelComboBox->addItem("RC8");
-    ui.rollChannelComboBox->addItem("RC10");
-    ui.rollChannelComboBox->addItem("RC11");
+    ui.rollChannelComboBox->addItem(tr("Disable"), 0);
+    ui.rollChannelComboBox->addItem("RC5", 5);
+    ui.rollChannelComboBox->addItem("RC6", 6);
+    ui.rollChannelComboBox->addItem("RC7", 7);
+    ui.rollChannelComboBox->addItem("RC8", 8);
+    ui.rollChannelComboBox->addItem("RC9 (APlane)", 9);
+    ui.rollChannelComboBox->addItem("RC10", 10);
+    ui.rollChannelComboBox->addItem("RC11", 11);
 
-    ui.rollInputChannelComboBox->addItem(tr("Disable"));
-    ui.rollInputChannelComboBox->addItem("RC5");
-    ui.rollInputChannelComboBox->addItem("RC6");
-    ui.rollInputChannelComboBox->addItem("RC7");
-    ui.rollInputChannelComboBox->addItem("RC8");
-
-
-    ui.panChannelComboBox->addItem(tr("Disable"));
-    ui.panChannelComboBox->addItem("RC5");
-    ui.panChannelComboBox->addItem("RC6");
-    ui.panChannelComboBox->addItem("RC7");
-    ui.panChannelComboBox->addItem("RC8");
-    ui.panChannelComboBox->addItem("RC10");
-    ui.panChannelComboBox->addItem("RC11");
-
-    ui.panInputChannelComboBox->addItem(tr("Disable"));
-    ui.panInputChannelComboBox->addItem("RC5");
-    ui.panInputChannelComboBox->addItem("RC6");
-    ui.panInputChannelComboBox->addItem("RC7");
-    ui.panInputChannelComboBox->addItem("RC8");
+    ui.rollInputChannelComboBox->addItem(tr("Disable"), 0);
+    ui.rollInputChannelComboBox->addItem("RC5", 5);
+    ui.rollInputChannelComboBox->addItem("RC6", 6);
+    ui.rollInputChannelComboBox->addItem("RC7", 7);
+    ui.rollInputChannelComboBox->addItem("RC8", 8);
 
 
-    ui.shutterChannelComboBox->addItem(tr("Disable"));
-    ui.shutterChannelComboBox->addItem(tr("Relay"));
-    ui.shutterChannelComboBox->addItem(tr("Transistor"));
-    ui.shutterChannelComboBox->addItem("RC5");
-    ui.shutterChannelComboBox->addItem("RC6");
-    ui.shutterChannelComboBox->addItem("RC7");
-    ui.shutterChannelComboBox->addItem("RC8");
-    ui.shutterChannelComboBox->addItem("RC10");
-    ui.shutterChannelComboBox->addItem("RC11");
+    ui.panChannelComboBox->addItem(tr("Disable"), 0);
+    ui.panChannelComboBox->addItem("RC5", 5);
+    ui.panChannelComboBox->addItem("RC6", 6);
+    ui.panChannelComboBox->addItem("RC7", 7);
+    ui.panChannelComboBox->addItem("RC8", 8);
+    ui.panChannelComboBox->addItem("RC9 (APlane)", 9);
+    ui.panChannelComboBox->addItem("RC10", 10);
+    ui.panChannelComboBox->addItem("RC11", 11);
+
+    ui.panInputChannelComboBox->addItem(tr("Disable"), 0);
+    ui.panInputChannelComboBox->addItem("RC5", 5);
+    ui.panInputChannelComboBox->addItem("RC6", 6);
+    ui.panInputChannelComboBox->addItem("RC7", 7);
+    ui.panInputChannelComboBox->addItem("RC8", 8);
+
+
+    ui.shutterChannelComboBox->addItem(tr("Disable"), 0);
+    ui.shutterChannelComboBox->addItem(tr("Relay"), 0);
+    ui.shutterChannelComboBox->addItem(tr("Transistor"), 1);
+    ui.shutterChannelComboBox->addItem("RC5", 5);
+    ui.shutterChannelComboBox->addItem("RC6", 6);
+    ui.shutterChannelComboBox->addItem("RC7", 7);
+    ui.shutterChannelComboBox->addItem("RC8", 8);
+    ui.shutterChannelComboBox->addItem("RC9 (APlane)", 9);
+    ui.shutterChannelComboBox->addItem("RC10", 10);
+    ui.shutterChannelComboBox->addItem("RC11", 11);
 
     connect(ui.tiltServoMinSpinBox,SIGNAL(editingFinished()),this,SLOT(updateTilt()));
     connect(ui.tiltServoMaxSpinBox,SIGNAL(editingFinished()),this,SLOT(updateTilt()));
@@ -145,6 +148,27 @@ void CameraGimbalConfig::updateControlAngles()
     m_uas->getParamManager()->setParameter(1,"MNT_CONTROL_Z",ui.controlZSpinBox->value());
 }
 
+void CameraGimbalConfig::setRCParameters(MAV_COMPONENT component, QString channel, int min, int max, bool reverse)
+{
+    qDebug() << "Setting RC Parameters Channel:" << channel
+             << " min:" << min << " max:" << max << " reverse:" << reverse << "comp:" << component;
+    QGCUASParamManager *pm = m_uas->getParamManager();
+    pm->setParameter(1, "RC" + channel + "_FUNCTION", channel.toInt());
+    pm->setParameter(1, "RC" + channel + "_MIN",min);
+    pm->setParameter(1, "RC" + channel + "_MAX",max);
+    pm->setParameter(1, "RC" + channel + "_REV",reverse);
+}
+
+void CameraGimbalConfig::setMountParameters(MAV_COMPONENT component, QString type, int minAngle, int maxAngle, int inChannel)
+{
+    qDebug() << "Setting Mount Parameters input Channel:" << inChannel
+             << " minAngle:" << minAngle << " maxAngle:" << maxAngle << "comp:" << component;
+    m_uas->getParamManager()->setParameter(1, "MNT_ANGMIN_" + type, minAngle * 100); // centiDegrees
+    m_uas->getParamManager()->setParameter(1, "MNT_ANGMAX_" + type, maxAngle * 100); // centiDegrees
+
+    m_uas->getParamManager()->setParameter(1, "MNT_RC_IN_" + type , inChannel);
+}
+
 void CameraGimbalConfig::updateTilt()
 {
     if (!m_uas)
@@ -163,20 +187,20 @@ void CameraGimbalConfig::updateTilt()
         return;
     }
 
-    m_uas->getParamManager()->setParameter(1,ui.tiltChannelComboBox->currentText() + "_FUNCTION",7);
-    m_uas->getParamManager()->setParameter(1,ui.tiltChannelComboBox->currentText() + "_MIN",ui.tiltServoMinSpinBox->value());
-    m_uas->getParamManager()->setParameter(1,ui.tiltChannelComboBox->currentText() + "_MAX",ui.tiltServoMaxSpinBox->value());
-    m_uas->getParamManager()->setParameter(1,"MNT_ANGMIN_TIL",ui.tiltAngleMinSpinBox->value() * 100);
-    m_uas->getParamManager()->setParameter(1,"MNT_ANGMAX_TIL",ui.tiltAngleMaxSpinBox->value() * 100);
-    m_uas->getParamManager()->setParameter(1,ui.tiltChannelComboBox->currentText() + "_REV",(ui.tiltReverseCheckBox->isChecked() ? 1 : 0));
-    if (ui.tiltInputChannelComboBox->currentIndex() == 0)
-    {
-        m_uas->getParamManager()->setParameter(1,"MNT_RC_IN_TILT",0);
-    }
-    else
-    {
-        m_uas->getParamManager()->setParameter(1,"MNT_RC_IN_TILT",ui.tiltInputChannelComboBox->currentIndex()+4);
-    }
+    QString channel = ui.tiltChannelComboBox->itemData(ui.tiltChannelComboBox->currentIndex()).toString();
+
+    // component is currently ignored by APM, so MAV_COMP_ID_CAMERA seems ideal.
+    setRCParameters(MAV_COMP_ID_CAMERA, channel,
+                    ui.tiltServoMinSpinBox->value(),
+                    ui.tiltServoMaxSpinBox->value(),
+                    ui.tiltReverseCheckBox->isChecked() );
+
+    int inChannel = ui.tiltInputChannelComboBox->itemData(ui.tiltInputChannelComboBox->currentIndex()).toInt();
+
+    setMountParameters(MAV_COMP_ID_CAMERA, "TILT",
+                       ui.tiltAngleMinSpinBox->value(),
+                       ui.tiltAngleMaxSpinBox->value(),
+                       inChannel);
 }
 
 void CameraGimbalConfig::updateRoll()
@@ -186,20 +210,21 @@ void CameraGimbalConfig::updateRoll()
         showNullMAVErrorMessageBox();
         return;
     }
-    m_uas->getParamManager()->setParameter(1,ui.rollChannelComboBox->currentText() + "_FUNCTION",8);
-    m_uas->getParamManager()->setParameter(1,ui.rollChannelComboBox->currentText() + "_MIN",ui.rollServoMinSpinBox->value());
-    m_uas->getParamManager()->setParameter(1,ui.rollChannelComboBox->currentText() + "_MAX",ui.rollServoMaxSpinBox->value());
-    m_uas->getParamManager()->setParameter(1,"MNT_ANGMIN_ROL",ui.rollAngleMinSpinBox->value() * 100);
-    m_uas->getParamManager()->setParameter(1,"MNT_ANGMAX_ROL",ui.rollAngleMaxSpinBox->value() * 100);
-    m_uas->getParamManager()->setParameter(1,ui.rollChannelComboBox->currentText() + "_REV",(ui.rollReverseCheckBox->isChecked() ? 1 : 0));
-    if (ui.rollInputChannelComboBox->currentIndex() == 0)
-    {
-        m_uas->getParamManager()->setParameter(1,"MNT_RC_IN_ROLL",0);
-    }
-    else
-    {
-        m_uas->getParamManager()->setParameter(1,"MNT_RC_IN_ROLL",ui.rollInputChannelComboBox->currentIndex()+4);
-    }
+
+    QString channel = ui.rollChannelComboBox->itemData(ui.rollChannelComboBox->currentIndex()).toString();
+    setRCParameters(MAV_COMP_ID_CAMERA, channel,
+                    ui.rollServoMinSpinBox->value(),
+                    ui.rollServoMaxSpinBox->value(),
+                    ui.rollReverseCheckBox->isChecked());
+
+    int inChannel = ui.rollInputChannelComboBox->itemData(ui.rollInputChannelComboBox->currentIndex()).toInt();
+
+    setMountParameters(MAV_COMP_ID_CAMERA, "ROLL",
+                       ui.rollAngleMinSpinBox->value(),
+                       ui.rollAngleMinSpinBox->value(),
+                       inChannel);
+
+
 }
 
 void CameraGimbalConfig::updatePan()
@@ -209,20 +234,19 @@ void CameraGimbalConfig::updatePan()
         showNullMAVErrorMessageBox();
         return;
     }
-    m_uas->getParamManager()->setParameter(1,ui.panChannelComboBox->currentText() + "_FUNCTION",6);
-    m_uas->getParamManager()->setParameter(1,ui.panChannelComboBox->currentText() + "_MIN",ui.panServoMinSpinBox->value());
-    m_uas->getParamManager()->setParameter(1,ui.panChannelComboBox->currentText() + "_MAX",ui.panServoMaxSpinBox->value());
-    m_uas->getParamManager()->setParameter(1,"MNT_ANGMIN_PAN",ui.panAngleMinSpinBox->value() * 100);
-    m_uas->getParamManager()->setParameter(1,"MNT_ANGMAX_PAN",ui.panAngleMaxSpinBox->value() * 100);
-    m_uas->getParamManager()->setParameter(1,ui.panChannelComboBox->currentText() + "_REV",(ui.panReverseCheckBox->isChecked() ? 1 : 0));
-    if (ui.panInputChannelComboBox->currentIndex() == 0)
-    {
-        m_uas->getParamManager()->setParameter(1,"MNT_RC_IN_PAN",0);
-    }
-    else
-    {
-        m_uas->getParamManager()->setParameter(1,"MNT_RC_IN_PAN",ui.panInputChannelComboBox->currentIndex()+4);
-    }
+
+    QString channel = ui.panChannelComboBox->itemData(ui.panChannelComboBox->currentIndex()).toString();
+    setRCParameters(MAV_COMP_ID_CAMERA, channel,
+                    ui.panServoMinSpinBox->value(),
+                    ui.panServoMaxSpinBox->value(),
+                    ui.panReverseCheckBox->isChecked());
+
+    int inChannel = ui.panInputChannelComboBox->itemData(ui.panInputChannelComboBox->currentIndex()).toInt();
+
+    setMountParameters(MAV_COMP_ID_CAMERA, "PAN",
+                       ui.panAngleMinSpinBox->value(),
+                       ui.panAngleMaxSpinBox->value(),
+                       inChannel);
 }
 
 void CameraGimbalConfig::updateShutter()
