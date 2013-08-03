@@ -154,7 +154,7 @@ void APMToolBar::setConnection(bool connection)
 {
     // Change the image to represent the state
     QObject *object = rootObject();
-    object->setProperty("connected", connection);
+    if (object) object->setProperty("connected", connection);
 }
 
 APMToolBar::~APMToolBar()
