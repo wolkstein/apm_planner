@@ -27,7 +27,11 @@ void AP2ConfigWidget::parameterChanged(int uas, int component, QString parameter
 {
 
 }
-void AP2ConfigWidget::showNullMAVErrorMessageBox()
+bool AP2ConfigWidget::showNullMAVErrorMessageBox()
 {
-    QMessageBox::information(0,tr("Error"),tr("Please connect to a MAV before attempting to set configuration"));
+    if (!m_uas) {
+        QMessageBox::information(0,tr("Error"),tr("Please connect to a MAV before attempting to set configuration"));
+        return true;
+    }
+    return false;
 }

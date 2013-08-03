@@ -1007,7 +1007,7 @@ void QGCParamWidget::requestParameterUpdate(int component, const QString& parame
  */
 void QGCParamWidget::setParameter(int component, QString parameterName, QVariant value)
 {
-    qDebug() << "QGCParamWidget::SetParameter" << parameterName << value << component;
+    qDebug() << "QGCParamWidget::SetParameter" << parameterName << value << "comp:" << component;
     if (paramMin.contains(parameterName) && value.toDouble() < paramMin.value(parameterName))
     {
         statusLabel->setText(tr("REJ. %1 < min").arg(value.toDouble()));
@@ -1055,7 +1055,7 @@ void QGCParamWidget::setParameter(int component, QString parameterName, QVariant
     }
         break;
     default:
-        qCritical() << "ABORTED PARAM SEND, NO VALID QVARIANT TYPE";
+        qCritical() << "QGCParamWidget: ABORTED PARAM SEND, NO VALID QVARIANT TYPE";
         return;
     }
 

@@ -1895,7 +1895,7 @@ void UAS::forwardMessage(mavlink_message_t message)
                 {
                     if(serial != links->at(i))
                     {
-                        qDebug()<<"Antenna tracking: Forwarding Over link: "<<serial->getName()<<" "<<serial;
+//                        qDebug()<<"Antenna tracking: Forwarding Over link: "<<serial->getName()<<" "<<serial;
                         sendMessage(serial, message);
                     }
                 }
@@ -2481,6 +2481,7 @@ void UAS::setParameter(const int component, const QString& id, const QVariant& v
 */
 void UAS::requestParameter(int component, int id)
 {
+    qDebug() << getUASName() << "reqParamId:" << id << "comp:" << component;
     // Request parameter, use parameter name to request it
     mavlink_message_t msg;
     mavlink_param_request_read_t read;
@@ -2490,7 +2491,6 @@ void UAS::requestParameter(int component, int id)
     read.target_component = component;
     mavlink_msg_param_request_read_encode(mavlink->getSystemId(), mavlink->getComponentId(), &msg, &read);
     sendMessage(msg);
-    //qDebug() << __FILE__ << __LINE__ << "REQUESTING PARAM RETRANSMISSION FROM COMPONENT" << component << "FOR PARAM ID" << id;
 }
 
 /**
@@ -2498,6 +2498,7 @@ void UAS::requestParameter(int component, int id)
 */
 void UAS::requestParameter(int component, const QString& parameter)
 {
+    qDebug() << getUASName() << "reqParam:" << parameter << "comp:" << component;
     // Request parameter, use parameter name to request it
     mavlink_message_t msg;
     mavlink_param_request_read_t read;
@@ -2513,7 +2514,6 @@ void UAS::requestParameter(int component, const QString& parameter)
     read.target_component = component;
     mavlink_msg_param_request_read_encode(mavlink->getSystemId(), mavlink->getComponentId(), &msg, &read);
     sendMessage(msg);
-    qDebug() << __FILE__ << __LINE__ << "REQUESTING PARAM RETRANSMISSION FROM COMPONENT" << component << "FOR PARAM NAME" << parameter;
 }
 
 /**
