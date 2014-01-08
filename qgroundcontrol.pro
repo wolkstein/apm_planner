@@ -35,6 +35,9 @@ linux-g++ | linux-g++-64 {
 } else : win32-msvc2008 | win32-msvc2010 | win32-msvc2012 {
     message(Windows build)
     CONFIG += WindowsBuild
+}  else : win32-x-g++|win64-x-g++ {
+    message(Windows Cross Build)
+    CONFIG += WindowsCrossBuild
 } else : macx-clang {
     message(Mac build)
     CONFIG += MacBuild
@@ -92,9 +95,9 @@ QT += network \
 ##  testlib is needed even in release flavor for QSignalSpy support
 #QT += testlib
 
-gittouch.commands = touch qgroundcontrol.pro
-QMAKE_EXTRA_TARGETS += gittouch
-POST_TARGETDEPS += gittouch
+#gittouch.commands = touch qgroundcontrol.pro
+#QMAKE_EXTRA_TARGETS += gittouch
+#POST_TARGETDEPS += gittouch
 
 # Turn off serial port warnings
 DEFINES += _TTY_NOWARN_
@@ -143,8 +146,27 @@ WindowsBuild {
 
     DEFINES += GIT_COMMIT=$$system(\"c:/program files (x86)/git/bin/git.exe\" describe --dirty=-DEV --always)
     DEFINES += GIT_HASH=$$system(\"c:/program files (x86)/git/bin/git.exe\" log -n 1 --pretty=format:%H)
+}
+
+WindowsCrossBuild {
+    # Windows version cross compiled on linux using
+    DEFINES += __STDC_LIMIT_MACROS
+
+    # Specify multi-process compilation within Visual Studio.
+    # (drastically improves compilation times for multi-core computers)
+    QMAKE_CXXFLAGS_DEBUG += -MP
+    QMAKE_CXXFLAGS_RELEASE += -MP
+
+    # QWebkit is not needed on MS-Windows compilation environment
+    CONFIG -= webkit
+
+    RC_FILE = $$BASEDIR/qgroundcontrol.rc
 
     LIBS += -lz.dll
+    CONFIG += exceptions rtti
+
+    DEFINES += GIT_COMMIT=$$system(git describe --dirty=-DEV --always)
+    DEFINES += GIT_HASH=$$system(git log -n 1 --pretty=format:%H)
 }
 
 #
