@@ -84,6 +84,7 @@ UAS::UAS(MAVLinkProtocol* protocol, int id) : UASInterface(),
     tickLowpassVoltage(12.0f),
     warnVoltage(9.5f),
     warnLevelPercent(20.0f),
+    alertLevelPercent(10.0f),
     currentVoltage(12.6f),
     lpVoltage(12.0f),
     currentCurrent(0.4f),
@@ -540,6 +541,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             if (!batteryRemainingEstimateEnabled && chargeLevel != -1)
             {
                 chargeLevel = state.battery_remaining;
+                setAudioBatteryCurrentMessage(chargeLevel);
             }
 
             emit batteryChanged(this, lpVoltage, currentCurrent, getChargeLevel(), timeRemaining);
@@ -3289,17 +3291,24 @@ void UAS::setBattery(BatteryType type, int cells)
 * @param specifications of the battery
 */
 void UAS::setBatterySpecs(const QString& specs)
-{
+{    
     if (specs.length() == 0 || specs.contains("%"))
     {
         batteryRemainingEstimateEnabled = false;
-        bool ok;
         QString percent = specs;
         percent = percent.remove("%");
-        float temp = percent.toFloat(&ok);
-        if (ok)
+        percent = percent.remove("%");
+        QStringList parts = percent.split(",");
+        if (parts.length() == 2)
         {
-            warnLevelPercent = temp;
+            float temp;
+            bool ok;
+            // get warning percent
+            temp = parts.at(0).toFloat(&ok);
+            if (ok) warnLevelPercent = temp;
+            // get alert percent
+            temp = parts.at(1).toFloat(&ok);
+            if (ok) alertLevelPercent = temp;
         }
         else
         {
@@ -3345,7 +3354,7 @@ QString UAS::getBatterySpecs()
     }
     else
     {
-        return QString("%1%").arg(warnLevelPercent);
+        return QString("%1%,%2%").arg(warnLevelPercent).arg(alertLevelPercent);
     }
 }
 
@@ -3405,6 +3414,46 @@ void UAS::stopLowBattAlarm()
         GAudioOutput::instance()->stopEmergency();
         lowBattAlarm = false;
     }
+}
+
+void UAS::setAudioBatteryCurrentMessage(float charge)
+{
+    /// battery level as audio message in percent
+    static int configwarnstepdown = 0;
+    int configwarnsteps = 5 + configwarnstepdown; // steps in percent for each warning. maybe can set from config uas later
+    int myoffset = -1; // local offset, only needed for calculation
+    int ofsettchargelevel = (int)charge + myoffset; // chargelevel with offset
+    static int sold = ofsettchargelevel / configwarnsteps; // prevent double playing messages
+    
+    // calculate step
+    if( (int)ofsettchargelevel %configwarnsteps == 0 )
+    {
+        sold = ofsettchargelevel / configwarnsteps;
+    }
+    // set testing var
+    int testing = ofsettchargelevel / configwarnsteps;
+    
+    // check if we reach first time new percent level to send message
+    if( testing != sold )
+    {
+        // send message
+        if(charge > warnLevelPercent)
+        {
+            GAudioOutput::instance()->say( QString( "Battery level at: %1 persent" ).arg( (int)charge ) );
+        }
+        if(charge <= warnLevelPercent && charge > alertLevelPercent)
+        {
+            configwarnstepdown = -2;
+            GAudioOutput::instance()->say( QString( "Battery Warning! level at: %1 persent" ).arg( (int)charge ) );
+        }
+        if(charge <= alertLevelPercent)
+        {
+            GAudioOutput::instance()->alert( QString( "Battery alarm! level at: %1 persent" ).arg( (int)charge ) );
+        }
+        // set testing var for next step
+        sold = testing;
+    }
+    /// ~Audio battery level as audio message in persent  
 }
 
 int UAS::getCustomMode()
