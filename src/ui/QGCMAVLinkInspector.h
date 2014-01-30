@@ -38,7 +38,7 @@ public slots:
 protected:
     int selectedSystemID;          ///< Currently selected system
     int selectedComponentID;       ///< Currently selected component
-    QMap<int, quint64> lastMessageUpdate; ///< Used to switch between highlight and non-highlighting color
+    QMap<int, unsigned long> lastMessageUpdate; ///< Used to switch between highlight and non-highlighting color
     QMap<int, float> messagesHz; ///< Used to store update rate in Hz
     QMap<int, unsigned int> messageCount; ///< Used to store the message count
     mavlink_message_t receivedMessages[256]; ///< Available / known messages
