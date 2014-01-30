@@ -354,8 +354,8 @@ void APMToolBar::updateLinkDisplay(LinkInterface* link)
     QObject *object = rootObject();
 
     if (link && object){
-        qint64 baudrate = link->getNominalDataRate();
-        object->setProperty("baudrateLabel", QString::number(baudrate));
+        //qint64 baudrate = link->getNominalDataRate();
+        //object->setProperty("baudrateLabel", QString::number(baudrate));
 
         QString linkName = link->getName();
         object->setProperty("linkNameLabel", linkName);

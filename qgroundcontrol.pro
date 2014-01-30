@@ -796,6 +796,16 @@ OTHER_FILES += \
     qml/resources/apmplanner/toolbar/flightdata.png \
     qml/resources/apmplanner/toolbar/disconnect.png \
     qml/resources/apmplanner/toolbar/donate.png \
+    qml/resources/apmplanner/toolbar/small/connect.png \
+    qml/resources/apmplanner/toolbar/small/flightplanner.png \
+    qml/resources/apmplanner/toolbar/small/helpwizard.png \
+    qml/resources/apmplanner/toolbar/small/light_initialsetup_icon.png \
+    qml/resources/apmplanner/toolbar/small/terminal.png \
+    qml/resources/apmplanner/toolbar/small/simulation.png \
+    qml/resources/apmplanner/toolbar/small/light_tuningconfig_icon.png \
+    qml/resources/apmplanner/toolbar/small/flightdata.png \
+    qml/resources/apmplanner/toolbar/small/disconnect.png \
+    qml/resources/apmplanner/toolbar/small/donate.png
 
 # Command Line Tools
 OTHER_FILES += \

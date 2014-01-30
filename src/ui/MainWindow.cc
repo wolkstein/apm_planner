@@ -259,9 +259,9 @@ MainWindow::MainWindow(QWidget *parent):
 
     QDockWidget *widget = new QDockWidget(tr("APM Tool Bar"),this);
     widget->setWidget(m_apmToolBar);
-    widget->setMinimumHeight(72);
-    widget->setMaximumHeight(72);
-    widget->setMinimumWidth(1024);
+    widget->setMinimumHeight(50);
+    widget->setMaximumHeight(50);
+    widget->setMinimumWidth(750);
     widget->setFeatures(QDockWidget::NoDockWidgetFeatures);
     widget->setTitleBarWidget(new QWidget(this)); // Disables the title bar
 //    /*widget*/->setStyleSheet("QDockWidget { border: 0px solid #FFFFFF; border-radius: 0px; border-bottom: 0px;}");

@@ -25,7 +25,7 @@ Rectangle {
     property int margin: 5
 
     width: textBox.width
-    height: 72
+    height: 50
     anchors.verticalCenter: parent.verticalCenter
     color: "black"
 

@@ -26,7 +26,7 @@ Rectangle {
 
     property alias backgroundColor : toolbar.color
     property alias linkNameLabel: linkDevice.label
-    property alias baudrateLabel: baudrate.label
+    //property alias baudrateLabel: baudrate.label
     property bool connected: false
     property bool armed: false
     property string armedstr: "status"
@@ -63,7 +63,7 @@ Rectangle {
     }
 
     width: toolbar.width
-    height: 72
+    height: 50
     color: "black"
     border.color: "black"
 
@@ -74,13 +74,13 @@ Rectangle {
     onConnectedChanged: {
         if (connected){
             console.log("APM Tool BAR QML: connected")
-            connectButton.image = "./resources/apmplanner/toolbar/disconnect.png"
+            connectButton.image = "./resources/apmplanner/toolbar/small/disconnect.png"
             connectButton.label = "DISCONNECT"
             setArmed(armed)
 
         } else {
             console.log("APM Tool BAR QML: disconnected")
-            connectButton.image = "./resources/apmplanner/toolbar/connect.png"
+            connectButton.image = "./resources/apmplanner/toolbar/small/connect.png"
             connectButton.label = "CONNECT"
             stopAnimation = true;
             clearArmedMode()
@@ -124,8 +124,8 @@ Rectangle {
 
         Button {
             id: flightDataView
-            label: "FLIGHT DATA"
-            image: "./resources/apmplanner/toolbar/flightdata.png"
+            label: "UAF DATA"
+            image: "./resources/apmplanner/toolbar/small/flightdata.png"
             onClicked: {
                 globalObj.triggerFlightView()
             }
@@ -133,23 +133,23 @@ Rectangle {
 
         Button {
             id: flightPlanView
-            label: "FLIGHT PLAN"
-            image: "./resources/apmplanner/toolbar/flightplanner.png"
+            label: "UAF PLAN"
+            image: "./resources/apmplanner/toolbar/small/flightplanner.png"
             onClicked: globalObj.triggerFlightPlanView()
         }
 
         Button {
             id: initialSetupView
-            label: "INITIAL SETUP"
-            image: "./resources/apmplanner/toolbar/light_initialsetup_icon.png"
+            label: "SETUP"
+            image: "./resources/apmplanner/toolbar/small/light_initialsetup_icon.png"
 //            margins: 8
             onClicked: globalObj.triggerInitialSetupView()
         }
 
         Button {
             id: configTuningView
-            label: "CONFIG/TUNING"
-            image: "./resources/apmplanner/toolbar/light_tuningconfig_icon.png"
+            label: "CONFIG"
+            image: "./resources/apmplanner/toolbar/small/light_tuningconfig_icon.png"
 //            margins: 8
             onClicked: globalObj.triggerConfigTuningView()
         }
@@ -157,7 +157,7 @@ Rectangle {
         Button {
             id: plotView
             label: "GRAPHS"
-            image: "./resources/apmplanner/toolbar/simulation.png"
+            image: "./resources/apmplanner/toolbar/small/simulation.png"
             onClicked: globalObj.triggerPlotView()
         }
 
@@ -172,7 +172,7 @@ Rectangle {
         Button {
             id: terminalView
             label: "TERMINAL"
-            image: "./resources/apmplanner/toolbar/terminal.png"
+            image: "./resources/apmplanner/toolbar/small/terminal.png"
             onClicked: globalObj.triggerTerminalView()
         }
 
@@ -267,7 +267,7 @@ Rectangle {
 
             onClicked: globalObj.showConnectionDialog()
         }
-
+/*
         TextButton {
             id: baudrate
             label: "none"
@@ -275,7 +275,7 @@ Rectangle {
 
             onClicked: globalObj.showConnectionDialog()
         }
-
+*/
         Rectangle {
             width: 5
             height: parent.height
@@ -285,7 +285,7 @@ Rectangle {
         Button {
             id: connectButton
             label: "CONNECT"
-            image: "./resources/apmplanner/toolbar/connect.png"
+            image: "./resources/apmplanner/toolbar/small/connect.png"
             onClicked: globalObj.connectMAV()
         }
 
