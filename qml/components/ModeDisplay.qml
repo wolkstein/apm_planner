@@ -24,8 +24,8 @@ Rectangle {
     property alias modeBackgroundColor: modeDisplay.color
     property color modeBorderColor: "White"
 
-    width: 155
-    height: parent.height/3
+    width: 100
+    height: parent.height/2
     anchors.verticalCenter: parent.verticalCenter
     radius: 3
     border.color: modeBorderColor

@@ -23,7 +23,7 @@ Rectangle {
     property alias statusBackgroundColor: statusDisplay.color
 
     width: 100
-    height: parent.height/3
+    height: parent.height/2
     anchors.verticalCenter: parent.verticalCenter
     radius: 3
     border.color: "white"

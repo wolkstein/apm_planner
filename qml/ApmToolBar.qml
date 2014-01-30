@@ -186,6 +186,7 @@ Rectangle {
         StatusDisplay {
             id: statusDisplayId
             width: 110
+            rotation: 0
             statusText: "status"
             statusTextColor: "yellow"
             statusBackgroundColor: "black"
@@ -199,6 +200,7 @@ Rectangle {
 
         ModeDisplay {
             id:modeTextId
+            rotation: 0
             modeText: "mode"
             modeTextColor: "red"
             modeBackgroundColor: "black"
@@ -213,6 +215,8 @@ Rectangle {
 
         HeartbeatDisplay {
             id:heartbeatDisplayId
+            rotation: 0
+            transformOrigin: Item.Center
             heartbeatBackgroundColor: "black"
             stopAnimation: stopAnimation
         }
@@ -244,14 +248,18 @@ Rectangle {
 //            }
 
     }
-
+    
     Row {
         id: connectionWidget
         anchors.right: parent.right
         spacing: 2
-
+        
         property bool disable: false
-
+        x: -186
+        y: 0
+        width: 186
+        anchors.rightMargin: 0
+        
         onDisableChanged:{
             if(disable){
                 visible = false;
@@ -259,40 +267,50 @@ Rectangle {
                 visible = true;
             }
         }
-
+        
         TextButton {
             id: linkDevice
+            width: 102
             label: "none"
             minWidth: linkDeviceSize
-
+            
             onClicked: globalObj.showConnectionDialog()
+            
+            Rectangle {
+                x: 102
+                y: 0
+                width: 5
+                height: parent.height
+                color: "black"
+            }
         }
-/*
+        /*
         TextButton {
             id: baudrate
             label: "none"
             minWidth: 70
-
+            
             onClicked: globalObj.showConnectionDialog()
         }
 */
-        Rectangle {
-            width: 5
-            height: parent.height
-            color: "black"
-        }
-
+        
         Button {
             id: connectButton
+            x: 103
+            width: 73
+            z: -19
+            rotation: 0
             label: "CONNECT"
             image: "./resources/apmplanner/toolbar/small/connect.png"
             onClicked: globalObj.connectMAV()
-        }
-
-        Rectangle { // Spacer
-            width: 5
-            height: parent.height
-            color: "black"
+            
+            Rectangle {
+                x: 74
+                y: 0 // Spacer
+                width: 5
+                height: parent.height
+                color: "black"
+            }
         }
     }
 }

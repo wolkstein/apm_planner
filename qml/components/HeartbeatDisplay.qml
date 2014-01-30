@@ -53,8 +53,8 @@ Rectangle {
         }
     }
 
-    width: parent.height/3
-    height: parent.height/3
+    width: parent.height/2
+    height: parent.height/2
     anchors.verticalCenter: parent.verticalCenter
     radius: 3
     border.color: heartbeatBorderColor

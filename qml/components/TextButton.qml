@@ -64,6 +64,8 @@ Rectangle {
 
             MouseArea {
                 id: textButtonMouseArea
+                smooth: true
+                anchors.topMargin: 0
                 anchors.fill: parent
                 onClicked: buttonClick()
                 hoverEnabled: true
