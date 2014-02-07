@@ -62,6 +62,7 @@ This file is part of the QGROUNDCONTROL project
 #endif
 
 #include "AboutDialog.h"
+#include "checklist/checklist.h"
 
 // FIXME Move
 #include "PxQuadMAV.h"
@@ -375,6 +376,7 @@ MainWindow::MainWindow(QWidget *parent):
         }
         permFile.close();
     }
+    GAudioOutput::instance()->say( "Apm Planner2 ready");
 #endif
 
 }
@@ -1539,6 +1541,8 @@ void MainWindow::connectCommonActions()
 
     // About
     connect(ui.actionAbout_APM_Planner_2_0, SIGNAL(triggered()), this, SLOT(showAbout()));
+    //CheckList
+    connect(ui.actionChecklist, SIGNAL(triggered()), this, SLOT(showChecklist()));
 
     // Connect actions from ui
     connect(ui.actionAdd_Link, SIGNAL(triggered()), this, SLOT(addLink()));
@@ -2334,6 +2338,15 @@ bool MainWindow::x11Event(XEvent *event)
 void MainWindow::showAbout()
 {
     AboutDialog* dialog = new AboutDialog(this);
+    dialog->exec();
+    dialog->hide();
+    delete dialog;
+    dialog = NULL;
+}
+
+void MainWindow::showChecklist()
+{
+    CheckList* dialog = new CheckList(this);
     dialog->exec();
     dialog->hide();
     delete dialog;

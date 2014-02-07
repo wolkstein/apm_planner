@@ -136,6 +136,8 @@ public slots:
     void showSettings();
     /** @brief Show the application About box */
     void showAbout();
+    /** @brief Show the application CheckList **/ 
+    void showChecklist();
     /** @brief Add a communication link */
     LinkInterface* addLink();
     void addLink(LinkInterface* link);
