@@ -376,7 +376,7 @@ MainWindow::MainWindow(QWidget *parent):
         }
         permFile.close();
     }
-    GAudioOutput::instance()->say( "Apm Planner2 ready");
+    GAudioOutput::instance()->say( "Apm Planner2, ready" );
 #endif
 
 }
