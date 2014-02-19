@@ -379,7 +379,6 @@ FORMS += \
     src/ui/dataselectionscreen.ui \
     src/ui/AboutDialog.ui \
     src/ui/AP2DataPlotAxisDialog.ui \
-    src/ui/configuration/LoadParameterConfig.ui \
     src/ui/checklist/checklist.ui
 
 HEADERS += \
@@ -581,7 +580,6 @@ HEADERS += \
     src/ui/uas/UASQuickViewTextLabel.h \
     src/uas/ApmUiHelpers.h \
     src/ui/AP2DataPlotAxisDialog.h \
-    src/ui/configuration/LoadParameterConfig.h \
     src/audio/AlsaAudio.h \
     src/ui/checklist/checklist.h
 #    libs/sik_uploader/qsikuploader.h \
@@ -778,7 +776,6 @@ SOURCES += src/main.cc \
     src/ui/uas/UASQuickViewTextLabel.cc \
     src/uas/ApmUiHelpers.cc \
     src/ui/AP2DataPlotAxisDialog.cc \
-    src/ui/configuration/LoadParameterConfig.cc \
     src/audio/AlsaAudio.cc \
     src/ui/checklist/checklist.cpp
 #    libs/sik_uploader/qsikuploader.cpp \
