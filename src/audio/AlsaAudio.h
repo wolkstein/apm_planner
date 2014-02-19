@@ -67,7 +67,7 @@ public:
     void setAAVolume( double volume){
         aa_Volume = volume;
     }
-    
+
 public slots:
     void run();
 
@@ -86,4 +86,3 @@ protected:
 };
 
 #endif // ALSAAUDIO_H
-
