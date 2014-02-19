@@ -36,6 +36,7 @@ This file is part of the PIXHAWK project
 #include <QListWidgetItem>
 #include <QTimer>
 #include <QColor>
+#include <QFile>
 
 namespace Ui {
 class CheckList;
@@ -52,11 +53,11 @@ public:
     void findNextUncheckedItem();
     
 private slots:
-    void onListItemClicked(QListWidgetItem* item);
+    //void onListItemClicked(QListWidgetItem* item);
     void localTimerEvent();   
     void on_ClosePushButton_clicked();
     
-    void on_NextItemPushButton_clicked();
+    void on_VerifiedItemPushButton_clicked();
     
     void on_SkipItemPushButton_clicked();
     
@@ -67,6 +68,9 @@ private:
     QListWidgetItem *CurrentItem;
     QColor SkippedItemColor;
     QColor InfoItemColor;
+    QString myDateAsString;
+    QFile *dayFile;
+    unsigned long myTimeInMillis;
 };
 
 #endif // CHECKLIST_H

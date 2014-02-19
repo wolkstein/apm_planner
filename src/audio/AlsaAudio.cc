@@ -82,6 +82,11 @@ void AlsaAudio::enqueueFilname(QString name)
     aa_fileNameQueue.enqueue(name);
 }
 
+void AlsaAudio::clearQueueFilname()
+{
+    aa_fileNameQueue.clear();
+}
+
 // main qthread
 void AlsaAudio::run()
 {

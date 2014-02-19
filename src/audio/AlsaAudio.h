@@ -54,6 +54,9 @@ public:
 
     /** @brief enqueue new filename */
     void enqueueFilname(QString name);
+    
+    /** @brief clear filename queue */
+    void clearQueueFilname();
 
     /** @brief set volume double 0.0f - 1.0f */
     double getAAVolume(){
@@ -64,7 +67,7 @@ public:
     void setAAVolume( double volume){
         aa_Volume = volume;
     }
-
+    
 public slots:
     void run();
 

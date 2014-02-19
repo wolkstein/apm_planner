@@ -32,10 +32,12 @@ This file is part of the PIXHAWK project
 #include "checklist.h"
 #include "ui_checklist.h"
 #include <QDebug>
-#include <QFile>
 #include <QTextStream>
 #include <QGC.h>
 #include <GAudioOutput.h>
+#include <QCryptographicHash>
+#include <QDate>
+
 
 CheckList::CheckList(QWidget *parent) :
     QDialog(parent),
@@ -43,6 +45,28 @@ CheckList::CheckList(QWidget *parent) :
 {
     ui->setupUi(this);
     currentAudioString = "Pre Flight Check List.";
+
+    // create dir security if not exist
+    QDir dir(QString("%1/%2").arg( QGC::appDataDirectory() ).arg( "security" ));
+    if (!dir.exists()) {
+        QLOG_INFO() << "Create directory security";
+        dir.mkpath(".");
+    }else
+    {
+        QLOG_INFO() << "Dir directory security exists";
+    }
+    
+    // security things
+    myDateAsString = QDate::currentDate().toString().replace(".","").replace(" ","_");
+    myTimeInMillis = QDateTime::currentDateTime().toMSecsSinceEpoch();
+    qDebug() << myDateAsString << myTimeInMillis;
+    
+    dayFile = new QFile(QGC::appDataDirectory() + "/security" + "/daylyChecklist_" + myDateAsString + ".txt");
+    
+    if (!dayFile->exists()){
+        dayFile->open(QIODevice::ReadWrite | QIODevice::Append | QIODevice::Text);
+    }
+    
     SkippedItemColor = QColor(Qt::blue);
     InfoItemColor = QColor(Qt::green);
     QFile file(QGC::appDataDirectory() + "/PreFlightCheckList.txt");
@@ -57,8 +81,8 @@ CheckList::CheckList(QWidget *parent) :
         out << "an \"[\"  on first position of row will leave this item uncheckable \n";
         out << "for example:\n";
         out << "[mechanical UAS checklist]\n";
-        out << "all motor mounts\n";
-        out << "voltage of main battery\n";
+        out << "please check all motor mounts\n";
+        out << "please check voltage of main battery\n";
         out << "[power UAS]\n";
         out << "turn on UAS transmitter\n";
         out << "connect main battery\n";
@@ -68,13 +92,14 @@ CheckList::CheckList(QWidget *parent) :
         
         file.close(); 
     }
+    ui->CheckListWidget->setMovement(QListView::Static);
+    ui->CheckListWidget->setAutoScroll(true);
     
     file.open(QIODevice::ReadOnly | QIODevice::Text);
     QTextStream in(&file);
     while (!in.atEnd()) {
         QString line = in.readLine();
         if(line.left(1)  == "#"){
-            qDebug()<<line<< "enthält einen comentator";
             continue;
         }
         QListWidgetItem *newItem = new QListWidgetItem;
@@ -102,19 +127,67 @@ CheckList::CheckList(QWidget *parent) :
 CheckList::~CheckList()
 {
     speaktimer->stop();
+    QString test = dayFile->fileName();
+    dayFile->close();
+    QFile* file = new QFile(test);
+    QString md5string;
+    
+    if(file->open(QIODevice::ReadOnly))
+    {
+      QCryptographicHash* hash;
+      
+      QByteArray result = hash->hash(file->readAll(),QCryptographicHash::Md5);
+      md5string = result.toHex();   
+      file->close();
+    } 
+    
+    // simple security against modify checklists later.
+    // this is a security for people who flying with formal UAS license in germany
+    // to holding and primary get a license is related to somse security rules.
+    // one of this rules is to work each time through a pre flight checklist.
+
+    qDebug() << md5string;
+    
+    QFile md5sum(test.replace(".txt","") + "_hash.txt");
+   // if (!md5sum.exists()){
+        md5sum.open(QIODevice::WriteOnly | QIODevice::Text);
+        QTextStream out(&md5sum);
+        out << md5string;
+        md5sum.close();
+    //}
+    
     delete ui;
 }
 
-void CheckList::onListItemClicked(QListWidgetItem* item)
+// makes no sense
+/*
+void CheckList::onListItemClicked(QListWidgetItem* litem)
 {
-    if(QString(item->text()) != QString(CurrentItem->text()))
+    
+    if(QString(litem->text()).left(1)  == "["){
         return;
-    speaktimer->stop();
-    GAudioOutput::instance()->say("verified!"); 
-    item->setCheckState(Qt::Checked);
-    item->setFont (QFont ("Sans Serif", 9));
-    findNextUncheckedItem();
+    }
+    int correctposition = 0;
+    for(int i = 0; i < ui->CheckListWidget->count(); i++ ){
+        if( i+1 > ui->CheckListWidget->currentRow() )
+            break;
+        QListWidgetItem *Item = ui->CheckListWidget->item(i);   
+        if(QString(Item->text()).left(1)  == "["){
+            correctposition++;
+            QLOG_INFO() <<correctposition << Item->text();
+        }
+    }
+    CurrentItem->setFont (QFont ("Sans Serif", 9));
+    CurrentItem = litem;
+    CurrentItem->setFont (QFont ("Sans Serif", 20));
+    //QLOG_INFO() << ui->CheckListWidget->currentRow();
+    currentAudioString = QString("Position: ")+ QString("%1").arg(ui->CheckListWidget->currentRow()+1-correctposition) + QString(": ") + CurrentItem->text();
+    GAudioOutput::instance()->say( currentAudioString );
+    if(!speaktimer->isActive())
+        speaktimer->start(20000);
 }
+*/
+
 
 void CheckList::findNextUncheckedItem()
 {
@@ -129,6 +202,9 @@ void CheckList::findNextUncheckedItem()
                 continue;
             }
             CurrentItem->setFont (QFont ("Sans Serif", 20));
+            ui->CheckListWidget->item(i)->setSelected(true);
+            if(i >1)
+                ui->CheckListWidget->scrollToItem(CurrentItem);
             currentAudioString = QString("Position: ")+ QString("%1").arg(i+1-correctposition) + QString(": ") + CurrentItem->text();
             GAudioOutput::instance()->say( currentAudioString );
             speaktimer->start(20000);
@@ -145,14 +221,19 @@ void CheckList::localTimerEvent()
 
 void CheckList::on_ClosePushButton_clicked()
 {
+    AlsaAudio::instance(this)->clearQueueFilname();
     this->close();
 }
 
-void CheckList::on_NextItemPushButton_clicked()
+void CheckList::on_VerifiedItemPushButton_clicked()
 {
     speaktimer->stop();
     GAudioOutput::instance()->say("verified!"); 
     CurrentItem->setCheckState(Qt::Checked);
+    
+    QTextStream out(dayFile);
+    myTimeInMillis = QDateTime::currentDateTime().toMSecsSinceEpoch();
+    out << currentAudioString + " Is verified. " + "Time=" + QString("%1").arg(myTimeInMillis) +"\n";
     CurrentItem->setFont (QFont ("Sans Serif", 9));
     findNextUncheckedItem();
     
@@ -161,11 +242,14 @@ void CheckList::on_NextItemPushButton_clicked()
 void CheckList::on_SkipItemPushButton_clicked()
 {
     if(CurrentItem->checkState() == Qt::Unchecked){
+        QTextStream out(dayFile);
+        myTimeInMillis = QDateTime::currentDateTime().toMSecsSinceEpoch();
+        out << currentAudioString + " Unverified! " + "Time=" + QString("%1").arg(myTimeInMillis) +"\n";
         CurrentItem->setFont (QFont ("Sans Serif", 9));
         CurrentItem->setBackgroundColor(SkippedItemColor);
         currentAudioString = QString("unverified!");
         GAudioOutput::instance()->say( currentAudioString );
-        speaktimer->start(20000);
+        //speaktimer->start(20000);
         findNextUncheckedItem();
     }   
 }

@@ -162,6 +162,7 @@ GAudioOutput::~GAudioOutput()
     QLOG_INFO() << "~GAudioOutput()";
 #ifdef Q_OS_LINUX
     // wait until thread is running before terminate AlsaAudio thread
+    AlsaAudio::instance(this)->clearQueueFilname();
     AlsaAudio::instance(this)->wait();
 #endif
 //#ifdef _MSC_VER2
