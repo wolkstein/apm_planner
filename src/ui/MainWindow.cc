@@ -674,14 +674,14 @@ void MainWindow::buildCommonWidgets()
         connect(tempAction,SIGNAL(triggered(bool)),this, SLOT(showTool(bool)));
         menuToDockNameMap[tempAction] = "HEAD_DOWN_DISPLAY_1_DOCKWIDGET";
     }
-
+#ifdef BUILD_MAVLINKINSPECTOR
     { //This is required since we disabled the only existing parent window for the MAVLink Inspector
         QAction* tempAction = ui.menuTools->addAction(tr("MAVLink Inspector"));
         tempAction->setCheckable(true);
         connect(tempAction,SIGNAL(triggered(bool)),this, SLOT(showTool(bool)));
         menuToDockNameMap[tempAction] = "MAVLINK_INSPECTOR_DOCKWIDGET";
     }
-
+#endif
     /*{ //Actuator status disabled until such a point that we can ensure it's completly operational
         QAction* tempAction = ui.menuTools->addAction(tr("Actuator Status"));
         tempAction->setCheckable(true);
@@ -841,10 +841,12 @@ void MainWindow::loadDockWidget(QString name)
     {
         createDockWidget(centerStack->currentWidget(),new QGCWaypointListMulti(this),tr("Mission Plan"),"WAYPOINT_LIST_DOCKWIDGET",currentView,Qt::BottomDockWidgetArea);
     }
+#ifdef BUILD_MAVLINKINSPECTOR    
     else if (name == "MAVLINK_INSPECTOR_DOCKWIDGET")
     {
         createDockWidget(centerStack->currentWidget(),new QGCMAVLinkInspector(mavlink,this),tr("MAVLink Inspector"),"MAVLINK_INSPECTOR_DOCKWIDGET",currentView,Qt::RightDockWidgetArea);
     }
+#endif
     else if (name == "PARAMETER_INTERFACE_DOCKWIDGET")
     {
         createDockWidget(centerStack->currentWidget(),new ParameterInterface(this),tr("Parameters"),"PARAMETER_INTERFACE_DOCKWIDGET",currentView,Qt::RightDockWidgetArea);

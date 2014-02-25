@@ -16,6 +16,7 @@ QGCMAVLinkInspector::QGCMAVLinkInspector(MAVLinkProtocol* protocol, QWidget *par
     selectedComponentID(0),
     ui(new Ui::QGCMAVLinkInspector)
 {
+#ifdef BUILD_MAVLINKINSPECTOR
     ui->setupUi(this);
 
     // Make sure "All" is an option for both the system and components
@@ -48,26 +49,34 @@ QGCMAVLinkInspector::QGCMAVLinkInspector(MAVLinkProtocol* protocol, QWidget *par
     // Attach the UI's refresh rate to a timer.
     connect(&updateTimer, SIGNAL(timeout()), this, SLOT(refreshView()));
     updateTimer.start(updateInterval);
+#endif
 }
 
 void QGCMAVLinkInspector::addSystem(UASInterface* uas)
 {
+#ifdef BUILD_MAVLINKINSPECTOR
     ui->systemComboBox->addItem(uas->getUASName(), uas->getUASID());
+#endif
 }
 
 void QGCMAVLinkInspector::selectDropDownMenuSystem(int dropdownid)
 {
+#ifdef BUILD_MAVLINKINSPECTOR
     selectedSystemID = ui->systemComboBox->itemData(dropdownid).toInt();
     rebuildComponentList();
+#endif
 }
 
 void QGCMAVLinkInspector::selectDropDownMenuComponent(int dropdownid)
 {
+#ifdef BUILD_MAVLINKINSPECTOR    
     selectedComponentID = ui->componentComboBox->itemData(dropdownid).toInt();
+#endif
 }
 
 void QGCMAVLinkInspector::rebuildComponentList()
 {
+#ifdef BUILD_MAVLINKINSPECTOR
     ui->componentComboBox->clear();
 
     // Fill
@@ -82,15 +91,18 @@ void QGCMAVLinkInspector::rebuildComponentList()
             ui->componentComboBox->addItem(name, id);
         }
     }
+#endif
 }
 
 void QGCMAVLinkInspector::addComponent(int uas, int component, const QString& name)
 {
+#ifdef BUILD_MAVLINKINSPECTOR   
     Q_UNUSED(component);
     Q_UNUSED(name);
     if (uas != selectedSystemID) return;
 
     rebuildComponentList();
+#endif
 }
 
 /**
@@ -99,15 +111,18 @@ void QGCMAVLinkInspector::addComponent(int uas, int component, const QString& na
  */
 void QGCMAVLinkInspector::clearView()
 {
+#ifdef BUILD_MAVLINKINSPECTOR    
     memset(receivedMessages, 0xFF, sizeof(mavlink_message_t)*256);
 	lastMessageUpdate.clear();
 	messagesHz.clear();
     treeWidgetItems.clear();
     ui->treeWidget->clear();
+#endif
 }
 
 void QGCMAVLinkInspector::refreshView()
 {
+#ifdef BUILD_MAVLINKINSPECTOR   
     for (int i = 0; i < 256; ++i)//mavlink_message_t msg, receivedMessages)
     {
         mavlink_message_t* msg = receivedMessages+i;
@@ -145,10 +160,12 @@ void QGCMAVLinkInspector::refreshView()
             updateField(msg->msgid, i, message->child(i));
         }
     }
+#endif
 }
 
 void QGCMAVLinkInspector::receiveMessage(LinkInterface* link,mavlink_message_t message)
 {
+#ifdef BUILD_MAVLINKINSPECTOR    
     Q_UNUSED(link);
     if (selectedSystemID != 0 && selectedSystemID != message.sysid) return;
     if (selectedComponentID != 0 && selectedComponentID != message.compid) return;
@@ -163,6 +180,7 @@ void QGCMAVLinkInspector::receiveMessage(LinkInterface* link,mavlink_message_t m
     }
 
     lastMessageUpdate.insert(message.msgid, receiveTime);
+#endif
 }
 
 QGCMAVLinkInspector::~QGCMAVLinkInspector()
@@ -172,6 +190,7 @@ QGCMAVLinkInspector::~QGCMAVLinkInspector()
 
 void QGCMAVLinkInspector::updateField(int msgid, int fieldid, QTreeWidgetItem* item)
 {
+#ifdef BUILD_MAVLINKINSPECTOR
     // Add field tree widget item
     item->setData(0, Qt::DisplayRole, QVariant(messageInfo[msgid].fields[fieldid].name));
     uint8_t* m = ((uint8_t*)(receivedMessages+msgid))+8;
@@ -416,4 +435,5 @@ void QGCMAVLinkInspector::updateField(int msgid, int fieldid, QTreeWidgetItem* i
         }
         break;
     }
+#endif
 }

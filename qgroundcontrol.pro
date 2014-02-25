@@ -133,6 +133,12 @@ LinuxBuild {
     DEFINES += GIT_COMMIT=$$system(git describe --dirty=-DEV --always)
     DEFINES += GIT_HASH=$$system(git log -n 1 --pretty=format:%H)
 
+    # under some debian based armhf distros QGCMavLinkInspector fails with an 
+    # compiler index out of range error. this pre-processor macro 
+    # simply allow to disable QGCMavLinkInspector widget
+    # to disable, simpe comment next line
+    DEFINES += BUILD_MAVLINKINSPECTOR
+
     LIBS += -lz
     LIBS += -lssl -lcrypto
 }
