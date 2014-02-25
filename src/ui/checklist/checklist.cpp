@@ -38,7 +38,6 @@ This file is part of the PIXHAWK project
 #include <QCryptographicHash>
 #include <QDate>
 
-
 CheckList::CheckList(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::CheckList)
@@ -210,8 +209,7 @@ void CheckList::findNextUncheckedItem()
             speaktimer->start(20000);
             return;
         }
-    }
-    
+    }  
 }
 
 void CheckList::localTimerEvent()
