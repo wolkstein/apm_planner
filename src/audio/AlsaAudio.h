@@ -77,8 +77,8 @@ private:
 
 protected:
 
-#ifdef Q_OS_LINUX
     bool alsa_play( QString filename );
+#ifdef Q_OS_LINUX
     snd_pcm_t * alsa_open( int channels, int srate );
     int alsa_write_float( snd_pcm_t *alsa_dev, float *data, int frames, int channels );
 #endif // Q_OS_LINUX
@@ -86,3 +86,4 @@ protected:
 };
 
 #endif // ALSAAUDIO_H
+

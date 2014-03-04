@@ -37,7 +37,6 @@ This file is part of the APM_PLANNER project
 #include <QNetworkReply>
 
 #include <QTemporaryFile>
-#include <QProcess>
 #include <QXmlStreamReader>
 #include <QMessageBox>
 #include <QProcess>
@@ -52,6 +51,7 @@ This file is part of the APM_PLANNER project
 #include "SerialSettingsDialog.h"
 #include "ui_ApmFirmwareConfig.h"
 #include "PX4FirmwareUploader.h"
+#include "arduinoflash.h"
 
 class ApmFirmwareConfig : public AP2ConfigWidget
 {
@@ -60,14 +60,17 @@ class ApmFirmwareConfig : public AP2ConfigWidget
 public:
     explicit ApmFirmwareConfig(QWidget *parent = 0);
     ~ApmFirmwareConfig();
+    void updateFirmwareButtons();
 signals:
     void showBlankingScreen();
+
 protected:
     void showEvent(QShowEvent *event);
     void hideEvent(QHideEvent *event);
 
 public slots:
     void checkForUpdates(const QString &versionString);
+    void advancedModeChanged(bool state);
 
 private slots:
     void firmwareListFinished();
@@ -77,13 +80,8 @@ private slots:
     void stableFirmwareButtonClicked();
     void downloadFinished();
     void trunkFirmwareButtonClicked();
-    void firmwareProcessFinished(int status);
-    void firmwareProcessReadyRead();
-    void firmwareProcessError(QProcess::ProcessError error);
     void firmwareDownloadProgress(qint64 received,qint64 total);
     void requestFirmwares(QString type, QString autopilot, bool notification);
-    void connectButtonClicked();
-    void disconnectButtonClicked();
     void setLink(int index);
     void activeUASSet(UASInterface *uas);
     void uasConnected();
@@ -98,6 +96,17 @@ private slots:
     void px4StatusUpdate(QString update);
     void px4DebugUpdate(QString update);
     void px4UnplugTimerTick();
+    void arduinoError(QString error);
+    void arduinoUploadStarted();
+    void arduinoFlashProgress(qint64 pos,qint64 total);
+    void arduinoVerifyProgress(qint64 pos,qint64 total);
+    void arduinoStatusUpdate(QString update);
+    void arduinoDebugUpdate(QString update);
+    void arduinoVerifyComplete();
+    void arduinoVerifyFailed();
+    void arduinoFlashComplete();
+    void arduinoFlashFailed();
+    void arduinoUploadComplete();
 
     void flashCustomFirmware();
     void flashFirmware(QString filename);
@@ -111,6 +120,7 @@ private:
     QString processPortInfo(const QSerialPortInfo &info);
     bool compareVersionStrings(const QString& newVersion, const QString& currentVersion);
     void compareVersionsForNotification(const QString &apmPlatform, const QString &newFwVersion);
+    void addButtonStyleSheet(QWidget *parent);
 
 private:
     bool versionIsGreaterThan(QString verstr,double version);
@@ -118,12 +128,12 @@ private:
     QProgressDialog *m_replugRequestMessageBox;
     QTimer *m_px4UnplugTimer;
     PX4FirmwareUploader *m_px4uploader;
+    ArduinoFlash *m_arduinoUploader;
     QString m_firmwareType;
     QString m_autopilotType;
     bool m_isPx4;
     int m_timeoutCounter;
     bool m_hasError;
-    QPointer<QProcess> m_burnProcess;
     QPointer<UASInterface> m_uas;
     SerialSettings m_settings;
     QPointer<QSerialPort> m_port;
@@ -161,6 +171,7 @@ private:
     bool m_updateCheckInitiated;
     QString m_currentVersionString;
     QString m_lastVersionSkipped;
+    bool m_isAdvancedMode;
 };
 
 #endif // APMFIRMWARECONFIG_H

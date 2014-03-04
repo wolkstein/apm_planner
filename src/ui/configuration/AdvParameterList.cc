@@ -169,6 +169,7 @@ void AdvParameterList::loadButtonClicked()
     }
 
     QString filename = QFileDialog::getOpenFileName(this,"Open File", QGC::parameterDirectory());
+    QApplication::processEvents(); // Helps clear dialog from screen
 
     if(filename.length() == 0)
     {
@@ -206,6 +207,7 @@ void AdvParameterList::loadButtonClicked()
 void AdvParameterList::saveButtonClicked()
 {
     QString filename = QFileDialog::getSaveFileName(this,"Save File", QGC::parameterDirectory());
+    QApplication::processEvents(); // Helps clear dialog from screen
 
     if(filename.length() == 0)
     {
@@ -362,48 +364,6 @@ void AdvParameterList::parameterChanged(int uas, int component, int parameterCou
         UASParameter* param = new UASParameter(parameterName,component,value,parameterId);
         m_parameterList.insert(parameterName, param);
     }
-
-//    QString countString;
-//    // Create progress of downloading of all parameters for the UI
-//    switch (m_paramDownloadState){
-//    case starting:
-//        QLOG_INFO() << "Starting Param Progress Bar Updating sys:" << uas;
-//        m_paramDownloadCount = 1;
-
-//        countString = QString::number(m_paramDownloadCount) + "/"
-//                        + QString::number(parameterCount);
-//        QLOG_INFO() << "Param Progress Bar: " << countString
-//                     << "paramId:" << parameterId << "name:" << parameterName
-//                     << "paramValue:" << value;
-//        ui.progressLabel->setText(countString);
-//        ui.paramProgressBar->setValue((m_paramDownloadCount/(float)parameterCount)*100.0);
-
-//        m_paramDownloadState = refreshing;
-//        break;
-
-//    case refreshing:
-//        m_paramDownloadCount++;
-//        countString = QString::number(m_paramDownloadCount) + "/"
-//                        + QString::number(parameterCount);
-//        QLOG_INFO() << "Param Progress Bar: " << countString
-//                     << "paramId:" << parameterId << "name:" << parameterName
-//                     << "paramValue:" << value;
-//        ui.progressLabel->setText(countString);
-//        ui.paramProgressBar->setValue((m_paramDownloadCount/(float)parameterCount)*100.0);
-
-//        if (m_paramDownloadCount == parameterCount)
-//            m_paramDownloadState = completed;
-//        break;
-
-//    case completed:
-//        QLOG_INFO() << "Finished Downloading Params" << m_paramDownloadCount;
-//        m_paramDownloadState = none;
-//        break;
-
-//    case none:
-//    default:
-//        ; // Do Nothing
-//    }
 }
 
 void AdvParameterList::downloadRemoteFiles()
@@ -434,7 +394,7 @@ void AdvParameterList::updateTableWidgetElements(QMap<QString, UASParameter *> &
             // Update the local table widget
             QTableWidgetItem* item = m_paramValueMap.value(param->name());
             if (item){
-                if(param->value() != item->data(Qt::DisplayRole)){
+                if(param->value().toDouble() != item->data(Qt::DisplayRole).toDouble()){
                     item->setData(Qt::DisplayRole, param->value());
                     tableWidgetItemChanged(item);
                 }

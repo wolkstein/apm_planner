@@ -587,7 +587,10 @@ HEADERS += \
     src/uas/ApmUiHelpers.h \
     src/ui/AP2DataPlotAxisDialog.h \
     src/audio/AlsaAudio.h \
-    src/ui/checklist/checklist.h
+    src/ui/checklist/checklist.h \
+    src/comm/arduino_intelhex.h \
+    src/comm/arduinoflash.h \
+    src/audio/AlsaAudio.h
 #    libs/sik_uploader/qsikuploader.h \
 #    libs/sik_uploader/sikuploader.h \
 
@@ -783,7 +786,9 @@ SOURCES += src/main.cc \
     src/uas/ApmUiHelpers.cc \
     src/ui/AP2DataPlotAxisDialog.cc \
     src/audio/AlsaAudio.cc \
-    src/ui/checklist/checklist.cpp
+    src/ui/checklist/checklist.cpp \
+    src/comm/arduino_intelhex.cpp \
+    src/comm/arduinoflash.cc
 #    libs/sik_uploader/qsikuploader.cpp \
 #    libs/sik_uploader/sikuploader.cpp \
 

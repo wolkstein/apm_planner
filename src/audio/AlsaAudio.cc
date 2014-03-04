@@ -97,10 +97,14 @@ void AlsaAudio::run()
 
 }
 
-#ifdef Q_OS_LINUX
+
 bool AlsaAudio::alsa_play( QString filename )
 {
+#ifndef Q_OS_LINUX
+    Q_UNUSED(filename);
+#endif
 
+#ifdef Q_OS_LINUX
     static float buffer [BUFFER_LEN];
     SNDFILE *sndfile;
     SF_INFO sfinfo;
@@ -381,7 +385,11 @@ int AlsaAudio::alsa_write_float(snd_pcm_t *alsa_dev, float *data, int frames, in
     } /* while */
 
     return total;
+#else
+    return 0;
+#endif // Q_OS_LINUX
+
 }
 
-#endif // Q_OS_LINUX
+
 

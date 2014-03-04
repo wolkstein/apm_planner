@@ -121,7 +121,14 @@ void AP2DataPlot2D::plotMouseMove(QMouseEvent *evt)
             }
         }
         //result.append("Key: " + QString::number(foundkey,'f',4) + "\n");
-        newresult.append("Time: " + QDateTime::fromMSecsSinceEpoch(foundkey * 1000.0).toString("hh:mm:ss") + "\n");
+        if (m_logLoaded)
+        {
+            newresult.append("Log Line: " + QString::number(foundkey,'f',0) + "\n");
+        }
+        else
+        {
+            newresult.append("Time: " + QDateTime::fromMSecsSinceEpoch(foundkey * 1000.0).toString("hh:mm:ss") + "\n");
+        }
     }
     for (int i=0;i<m_graphClassMap.keys().size();i++)
     {
@@ -522,6 +529,7 @@ void AP2DataPlot2D::loadButtonClicked()
             return;
         }
     }
+    QApplication::processEvents();
     //Clear the graph
     for (int i=0;i<m_graphNameList.size();i++)
     {
@@ -530,9 +538,14 @@ void AP2DataPlot2D::loadButtonClicked()
         m_plot->removeGraph(m_graphClassMap.value(m_graphNameList[i]).graph);
     }
     m_dataSelectionScreen->clear();
+    if (m_axisGroupingDialog)
+    {
+        m_axisGroupingDialog->clear();
+    }
     m_plot->replot();
     m_graphClassMap.clear();
     m_graphCount=0;
+    m_dataList.clear();
 
     if (m_logLoaded)
     {
