@@ -8,6 +8,12 @@
 #include "UAS.h"
 #include "UASManager.h"
 #include <QToolTip>
+#include <QSqlDatabase>
+#include <QSqlQuery>
+#include <QSqlRecord>
+#include <QSqlError>
+#include <QsLog.h>
+#include <QStandardItemModel>
 AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
 {
     m_uas = 0;
@@ -85,6 +91,7 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
     timer->start(500);
 
     connect(ui.graphControlsPushButton,SIGNAL(clicked()),this,SLOT(graphControlsButtonClicked()));
+    model = new QStandardItemModel();
 }
 void AP2DataPlot2D::plotMouseMove(QMouseEvent *evt)
 {
@@ -246,8 +253,6 @@ void AP2DataPlot2D::showOnlyClicked()
         }
     }
     m_showOnlyActive = true;
-
-
 }
 void AP2DataPlot2D::showAllClicked()
 {
@@ -260,6 +265,7 @@ void AP2DataPlot2D::showAllClicked()
 
 void AP2DataPlot2D::tableCellClicked(int row,int column)
 {
+
     if (ui.tableWidget->item(row,0))
     {
         if (m_tableHeaderNameMap.contains(ui.tableWidget->item(row,0)->text()))
@@ -568,12 +574,19 @@ void AP2DataPlot2D::loadButtonClicked()
         m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltNumber);
         m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(0,100);
     }
-    ui.tableWidget->setVisible(true);
-    ui.hideExcelView->setVisible(true);
     ui.autoScrollCheckBox->setChecked(false);
     ui.loadOfflineLogButton->setText("Unload Log");
 
     m_logLoaded = true;
+    //Create the in-memory database
+    m_sharedDb = QSqlDatabase::addDatabase("QSQLITE");
+    m_sharedDb.setDatabaseName(":memory:");
+    if (!m_sharedDb.open())
+    {
+        QMessageBox::information(0,"error","Error opening shared database " + m_sharedDb.lastError().text());
+        return;
+    }
+
     m_logLoaderThread = new AP2DataPlotThread();
     connect(m_logLoaderThread,SIGNAL(startLoad()),this,SLOT(loadStarted()));
     connect(m_logLoaderThread,SIGNAL(loadProgress(qint64,qint64)),this,SLOT(loadProgress(qint64,qint64)));
@@ -582,28 +595,46 @@ void AP2DataPlot2D::loadButtonClicked()
     connect(m_logLoaderThread,SIGNAL(terminated()),this,SLOT(threadTerminated()));
     connect(m_logLoaderThread,SIGNAL(payloadDecoded(int,QString,QVariantMap)),this,SLOT(payloadDecoded(int,QString,QVariantMap)));
     connect(m_logLoaderThread,SIGNAL(lineRead(QString)),this,SLOT(logLine(QString)));
-    m_logLoaderThread->loadFile(filename);
+    currentIndex=0;
+    m_logLoaderThread->loadFile(filename,&m_sharedDb);
 }
 void AP2DataPlot2D::logLine(QString line)
 {
-    QStringList linesplit = line.split(",");
-    if (ui.tableWidget->columnCount() < linesplit.size())
+    /*QList<QStandardItem*> rowlist;
+    //for (int i=0;i<loglines.size();i++)
+    //{
+        QStringList linesplit = line.split(",");
+        for (int j=0;j<linesplit.size();j++)
+        {
+            QStandardItem *item = new QStandardItem(linesplit.at(j));
+            rowlist.append(item);
+        }
+        model->appendRow(rowlist);
+        //rowlist.clear();
+    //}
+    //loglines.append(line);*/
+    //loglines.append(line);
+    if (ui.tableWidget->rowCount() <= currentIndex)
     {
-        ui.tableWidget->setColumnCount(linesplit.size());
+        ui.tableWidget->setRowCount(ui.tableWidget->rowCount()+1000);
     }
-    ui.tableWidget->setRowCount(ui.tableWidget->rowCount()+1);
-    for (int i=0;i<linesplit.size();i++)
-    {
-        ui.tableWidget->setItem(ui.tableWidget->rowCount()-1,i,new QTableWidgetItem(linesplit[i].trimmed()));
-    }
-    if (line.startsWith("FMT"))
-    {
-        //Format line
-        QString linename = linesplit[3].trimmed();
-        QString lastformat = line.mid(linesplit[0].size() + linesplit[1].size() + linesplit[2].size() + linesplit[3].size() + linesplit[4].size() + 5);
-        m_tableHeaderNameMap[linename] = lastformat.trimmed();
-
-    }
+        QStringList linesplit = line.split(",");
+        if (ui.tableWidget->columnCount() < linesplit.size())
+        {
+            ui.tableWidget->setColumnCount(linesplit.size());
+        }
+        for (int j=0;j<linesplit.size();j++)
+        {
+            ui.tableWidget->setItem(currentIndex,j,new QTableWidgetItem(linesplit[j].trimmed()));
+        }
+        if (line.startsWith("FMT"))
+        {
+            //Format line
+            QString linename = linesplit[3].trimmed();
+            QString lastformat = line.mid(linesplit[0].size() + linesplit[1].size() + linesplit[2].size() + linesplit[3].size() + linesplit[4].size() + 5);
+            m_tableHeaderNameMap[linename] = lastformat.trimmed();
+        }
+        currentIndex++;
 }
 
 void AP2DataPlot2D::threadTerminated()
@@ -631,6 +662,109 @@ void AP2DataPlot2D::itemEnabled(QString name)
 {
     if (m_logLoaded)
     {
+        QString parent = name.split(".")[0];
+        QString child = name.split(".")[1];
+        if (!m_sharedDb.isOpen())
+        {
+            if (!m_sharedDb.open())
+            {
+                //emit error("Unable to open database: " + m_sharedDb.lastError().text());
+                QMessageBox::information(0,"Error","Error opening DB");
+                return;
+            }
+        }
+        QSqlQuery tablequery(m_sharedDb);
+        //tablequery.prepare("SELECT * FROM '" + parent + "';");
+        tablequery.prepare("SELECT * FROM 'FMT' WHERE name == '" + parent + "';");
+        tablequery.exec();
+        if (!tablequery.next())
+        {
+            return;
+        }
+        QSqlRecord record = tablequery.record();
+        QStringList valuessplit = record.value(4).toString().split(","); //comma delimited list of names
+        bool found = false;
+        int index = 0;
+        for (int i=0;i<valuessplit.size();i++)
+        {
+            if (valuessplit.at(i) == child)
+            {
+                found = true;
+                index = i;
+                i = valuessplit.size();
+            }
+        }
+        if (!found)
+        {
+            return;
+        }
+        QSqlQuery itemquery(m_sharedDb);
+        itemquery.prepare("SELECT * FROM '" + parent + "';");
+        itemquery.exec();
+        QVector<double> xlist;
+        QVector<double> ylist;
+        while (itemquery.next())
+        {
+            QSqlRecord record = itemquery.record();
+            int graphindex = record.value(0).toInt();
+            double graphvalue = record.value(index+1).toDouble();
+            xlist.append(graphindex);
+            ylist.append(graphvalue);
+
+        }
+        QCPAxis *axis = m_wideAxisRect->addAxis(QCPAxis::atLeft);
+        axis->setLabel(name);
+
+        if (m_graphCount > 0)
+        {
+            connect(m_wideAxisRect->axis(QCPAxis::atLeft,0),SIGNAL(rangeChanged(QCPRange)),axis,SLOT(setRange(QCPRange)));
+        }
+        QColor color = QColor::fromRgb(rand()%255,rand()%255,rand()%255);
+        axis->setLabelColor(color);
+        axis->setTickLabelColor(color);
+        axis->setTickLabelColor(color); // add an extra axis on the left and color its numbers
+        QCPGraph *mainGraph1 = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft,m_graphCount++));
+        m_graphNameList.append(name);
+        mainGraph1->setData(xlist, ylist);
+        mainGraph1->rescaleValueAxis();
+        if (m_graphCount == 1)
+        {
+            mainGraph1->rescaleKeyAxis();
+        }
+        if (m_axisGroupingDialog)
+        {
+            m_axisGroupingDialog->addAxis(name,axis->range().lower,axis->range().upper,color);
+        }
+        mainGraph1->setPen(QPen(color, 2));
+        Graph graph;
+        graph.axis = axis;
+        graph.groupName = "";
+        graph.graph=  mainGraph1;
+        graph.isInGroup = false;
+        graph.isManualRange = false;
+        m_graphClassMap[name] = graph;
+        /*    if (!m_sharedDb.isOpen())
+    {
+        if (!m_sharedDb.open())
+        {
+            //emit error("Unable to open database: " + m_sharedDb.lastError().text());
+            QMessageBox::information(0,"Error","Error opening DB");
+            return;
+        }
+    }
+    //fmttablecreate.prepare("CREATE TABLE 'FMT' (typeID integer PRIMARY KEY,length integer,name varchar(200),format varchar(6000));");
+    QSqlQuery fmtquery(m_sharedDb);
+    fmtquery.prepare("SELECT * FROM 'FMT';");
+    if (!fmtquery.exec())
+    {
+        QMessageBox::information(0,"Error","Error selecting from table 'FMT' " + m_sharedDb.lastError().text());
+        return;
+
+    }
+    while (fmtquery.next())
+    {
+        QSqlRecord record = fmtquery.record();*/
+        return;
         name = name.mid(name.indexOf(":")+1);
         for (QMap<QString,QList<QPair<int,QVariantMap> > >::const_iterator i=m_dataList.constBegin();i!=m_dataList.constEnd();i++)
         {
@@ -886,7 +1020,55 @@ void AP2DataPlot2D::loadProgress(qint64 pos,qint64 size)
 
 void AP2DataPlot2D::threadDone()
 {
-    for (QMap<QString,QList<QPair<int,QVariantMap> > >::const_iterator i=m_dataList.constBegin();i!=m_dataList.constEnd();i++)
+    if (!m_sharedDb.isOpen())
+    {
+        if (!m_sharedDb.open())
+        {
+            //emit error("Unable to open database: " + m_sharedDb.lastError().text());
+            QMessageBox::information(0,"Error","Error opening DB");
+            return;
+        }
+    }
+    //fmttablecreate.prepare("CREATE TABLE 'FMT' (typeID integer PRIMARY KEY,length integer,name varchar(200),format varchar(6000));");
+    QSqlQuery fmtquery(m_sharedDb);
+    fmtquery.prepare("SELECT * FROM 'FMT';");
+    if (!fmtquery.exec())
+    {
+        QMessageBox::information(0,"Error","Error selecting from table 'FMT' " + m_sharedDb.lastError().text());
+        return;
+
+    }
+    //QSqlQuery itemquery(m_sharedDb);
+
+    while (fmtquery.next())
+    {
+        QSqlRecord record = fmtquery.record();
+        QString name = record.value(2).toString();
+        QString vars = record.value(4).toString();
+        QStringList varssplit = vars.split(",");
+        for (int i=0;i<varssplit.size();i++)
+        {
+            m_dataSelectionScreen->addItem(name + "." + varssplit.at(i));
+        }
+        QLOG_DEBUG() << record.value(0) << record.value(1) << record.value(2) << record.value(3) << record.value(4);
+        //rowlist.clear();
+        //itemquery.prepare("SELECT * FROM '" + name + "';");
+        //itemquery.exec();
+        //while (itemquery.next())
+        //{
+
+        //}
+    }
+    ui.tableWidget->setRowCount(currentIndex);
+
+
+
+
+    //QStandardItem *item = new QStandardItem();
+
+    //ui.tableWidget->setModel(model);
+
+    /*for (QMap<QString,QList<QPair<int,QVariantMap> > >::const_iterator i=m_dataList.constBegin();i!=m_dataList.constEnd();i++)
     {
         if (i.value().size() > 0)
         {
@@ -895,10 +1077,36 @@ void AP2DataPlot2D::threadDone()
                 m_dataSelectionScreen->addItem(j.key());
             }
         }
-    }
+    }*/
+
+
+    /*ui.tableWidget->setRowCount(loglines.size());
+    for (int i=0;i<loglines.size();i++)
+    {
+        QStringList linesplit = loglines.at(i).split(",");
+        if (ui.tableWidget->columnCount() < linesplit.size())
+        {
+            ui.tableWidget->setColumnCount(linesplit.size());
+        }
+        //ui.tableWidget->setRowCount(ui.tableWidget->rowCount()+1);
+        for (int j=0;j<linesplit.size();j++)
+        {
+            ui.tableWidget->setItem(i,j,new QTableWidgetItem(linesplit[j].trimmed()));
+        }
+        if (loglines.at(i).startsWith("FMT"))
+        {
+            //Format line
+            QString linename = linesplit[3].trimmed();
+            QString lastformat = loglines.at(i).mid(linesplit[0].size() + linesplit[1].size() + linesplit[2].size() + linesplit[3].size() + linesplit[4].size() + 5);
+            m_tableHeaderNameMap[linename] = lastformat.trimmed();
+
+        }
+    }*/
     m_progressDialog->hide();
     delete m_progressDialog;
     m_progressDialog=0;
+    ui.tableWidget->setVisible(true);
+    ui.hideExcelView->setVisible(true);
 }
 void AP2DataPlot2D::threadError(QString errorstr)
 {
