@@ -22,6 +22,10 @@ public:
     explicit AP2DataPlot2D(QWidget *parent = 0);
     ~AP2DataPlot2D();
     void addSource(MAVLinkDecoder *decoder);
+
+signals:
+    void toKMLClicked();
+
 private slots:
     //New Active UAS set
     void activeUASSet(UASInterface* uas);
@@ -79,6 +83,9 @@ private slots:
     void showAllClicked();
     void graphControlsButtonClicked();
     void plotMouseMove(QMouseEvent *evt);
+    void horizontalScrollMoved(int value);
+    void verticalScrollMoved(int value);
+    void xAxisChanged(QCPRange range);
 private:
     class Graph
     {
@@ -128,6 +135,11 @@ private:
     QProgressDialog *m_progressDialog;
     AP2DataPlotAxisDialog *m_axisGroupingDialog;
     qint64 m_timeDiff;
+
+
+    qint64 m_scrollStartIndex; //Actual graph start
+    qint64 m_scrollEndIndex; //Actual graph end
+
 
 };
 

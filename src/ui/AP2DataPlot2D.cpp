@@ -39,7 +39,8 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
 
     connect(m_plot,SIGNAL(mouseMove(QMouseEvent*)),this,SLOT(plotMouseMove(QMouseEvent*)));
 
-    ui.horizontalLayout_3->addWidget(m_plot);
+    //ui.horizontalLayout_3->addWidget(m_plot);
+    ui.verticalLayout_5->insertWidget(0,m_plot);
 
     m_plot->show();
     m_plot->plotLayout()->clear();
@@ -92,7 +93,41 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
 
     connect(ui.graphControlsPushButton,SIGNAL(clicked()),this,SLOT(graphControlsButtonClicked()));
     model = new QStandardItemModel();
+    connect(ui.toKMLPushButton, SIGNAL(clicked()), this, SIGNAL(toKMLClicked()));
+    connect(ui.horizontalScrollBar,SIGNAL(sliderMoved(int)),this,SLOT(horizontalScrollMoved(int)));
+    connect(ui.verticalScrollBar,SIGNAL(sliderMoved(int)),this,SLOT(verticalScrollMoved(int)));
+
+    connect(ui.horizontalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(horizontalScrollMoved(int)));
+    connect(ui.verticalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(verticalScrollMoved(int)));
+    connect(m_wideAxisRect->axis(QCPAxis::atBottom), SIGNAL(rangeChanged(QCPRange)), this, SLOT(xAxisChanged(QCPRange)));
+    m_plot->setPlottingHint(QCP::phFastPolylines,true);
 }
+void AP2DataPlot2D::xAxisChanged(QCPRange range)
+{
+    ui.horizontalScrollBar->setValue(qRound(range.center())); // adjust position of scroll bar slider
+    ui.horizontalScrollBar->setPageStep(qRound(range.size())); // adjust size of scroll bar slider
+}
+
+void AP2DataPlot2D::horizontalScrollMoved(int value)
+{
+    if (qAbs(m_wideAxisRect->axis(QCPAxis::atBottom)->range().center()-value) > 0.01) // if user is dragging plot, we don't want to replot twice
+    {
+      m_wideAxisRect->axis(QCPAxis::atBottom)->setRange(value,m_wideAxisRect->axis(QCPAxis::atBottom)->range().size(), Qt::AlignCenter);
+      m_plot->replot();
+    }
+    return;
+}
+
+void AP2DataPlot2D::verticalScrollMoved(int value)
+{
+    double percent = value / 100.0;
+    double center = m_wideAxisRect->axis(QCPAxis::atBottom)->range().center();
+    double requestedrange = ((m_scrollEndIndex - (m_timeDiff / 1000.0)) - m_scrollStartIndex) * percent;
+    m_wideAxisRect->axis(QCPAxis::atBottom)->setRangeUpper(center + (requestedrange/2.0));
+    m_wideAxisRect->axis(QCPAxis::atBottom)->setRangeLower(center - (requestedrange/2.0));
+    m_plot->replot();
+}
+
 void AP2DataPlot2D::plotMouseMove(QMouseEvent *evt)
 {
     if (!ui.showValuesCheckBox->isChecked())
@@ -370,6 +405,8 @@ void AP2DataPlot2D::activeUASSet(UASInterface* uas)
     }
     m_currentIndex = QDateTime::currentMSecsSinceEpoch();
     m_startIndex = m_currentIndex;
+    m_scrollStartIndex = 0;
+    ui.horizontalScrollBar->setMinimum(m_scrollStartIndex + m_timeDiff);
     m_uas = uas;
     connect(m_uas,SIGNAL(valueChanged(int,QString,QString,double,quint64)),this,SLOT(valueChanged(int,QString,QString,double,quint64)));
     connect(m_uas,SIGNAL(valueChanged(int,QString,QString,qint8,quint64)),this,SLOT(valueChanged(int,QString,QString,qint8,quint64)));
@@ -429,6 +466,9 @@ void AP2DataPlot2D::updateValue(const int uasId, const QString& name, const QStr
     {
         m_graphClassMap[propername].axisIndex = newmsec / 1000.0;// + 18000000;
         m_graphClassMap.value(propername).graph->addData(m_graphClassMap.value(propername).axisIndex,value);
+        m_scrollEndIndex = newmsec /  1000.0;
+        //ui.horizontalScrollBar->setMinimum(m_startIndex);
+        ui.horizontalScrollBar->setMaximum(m_scrollEndIndex);
         //Set a timeout for 30 minutes from now, 1800 seconds.
         qint64 current = QDateTime::currentMSecsSinceEpoch();
         //This is 30 minutes
@@ -864,6 +904,8 @@ void AP2DataPlot2D::itemEnabled(QString name)
             if (m_graphCount == 1)
             {
                 mainGraph1->rescaleKeyAxis();
+                //m_scrollStartIndex = m_currentIndex;
+                //ui.horizontalScrollBar->setMinimum(m_timeDiff);
             }
             if (m_axisGroupingDialog)
             {
@@ -1059,6 +1101,10 @@ void AP2DataPlot2D::threadDone()
 
         //}
     }
+    m_scrollStartIndex = 0;
+    m_scrollEndIndex = currentIndex;
+    ui.horizontalScrollBar->setMinimum(m_scrollStartIndex);
+    ui.horizontalScrollBar->setMaximum(m_scrollEndIndex);
     ui.tableWidget->setRowCount(currentIndex);
 
 

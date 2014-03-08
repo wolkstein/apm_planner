@@ -144,6 +144,7 @@ LinuxBuild {
 }
 
 WindowsBuild {
+    QT += script
     DEFINES += __STDC_LIMIT_MACROS
 
     # Specify multi-process compilation within Visual Studio.
@@ -161,6 +162,7 @@ WindowsBuild {
 }
 
 WindowsCrossBuild {
+    QT += script
     # Windows version cross compiled on linux using
     DEFINES += __STDC_LIMIT_MACROS
 
@@ -385,7 +387,9 @@ FORMS += \
     src/ui/dataselectionscreen.ui \
     src/ui/AboutDialog.ui \
     src/ui/AP2DataPlotAxisDialog.ui \
-    src/ui/checklist/checklist.ui
+    src/ui/AP2DataPlotAxisDialog.ui \
+    src/ui/checklist/checklist.ui \
+    src/ui/AutoUpdateDialog.ui
 
 HEADERS += \
     src/MG.h \
@@ -590,7 +594,9 @@ HEADERS += \
     src/ui/checklist/checklist.h \
     src/comm/arduino_intelhex.h \
     src/comm/arduinoflash.h \
-    src/audio/AlsaAudio.h
+    src/audio/AlsaAudio.h \
+    src/ui/AutoUpdateCheck.h \
+    src/ui/AutoUpdateDialog.h
 #    libs/sik_uploader/qsikuploader.h \
 #    libs/sik_uploader/sikuploader.h \
 
@@ -788,7 +794,9 @@ SOURCES += src/main.cc \
     src/audio/AlsaAudio.cc \
     src/ui/checklist/checklist.cpp \
     src/comm/arduino_intelhex.cpp \
-    src/comm/arduinoflash.cc
+    src/comm/arduinoflash.cc \
+    src/ui/AutoUpdateCheck.cc \
+    src/ui/AutoUpdateDialog.cc 
 #    libs/sik_uploader/qsikuploader.cpp \
 #    libs/sik_uploader/sikuploader.cpp \
 
