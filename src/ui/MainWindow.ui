@@ -559,6 +559,8 @@
   <action name="actionCheck_For_Updates">
    <property name="text">
     <string>Check For Updates</string>
+   </property>
+  </action>
   <action name="actionChecklist">
    <property name="icon">
     <iconset>
