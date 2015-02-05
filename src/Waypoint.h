@@ -126,6 +126,7 @@ public:
     }
     /** @brief Returns true if x, y, z contain reasonable navigation data */
     bool isNavigationType();
+    bool visibleOnMapWidget();
 
     void save(QTextStream &saveStream);
     bool load(QTextStream &loadStream);
@@ -192,7 +193,7 @@ public:
 
 signals:
     /** @brief Announces a change to the waypoint data */
-    void changed(Waypoint* wp);    
+    void changed(Waypoint* wp);
 };
 
 #endif // WAYPOINT_H
