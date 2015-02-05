@@ -85,11 +85,10 @@ bool Waypoint::isNavigationType()
 
 bool Waypoint::visibleOnMapWidget()
 {
-    // 201  Do Set Roi
-    // 183  Set Servo
-    // 181  Set Relay
     QList<int> extraVisibleWaypoints;
-    extraVisibleWaypoints << 201;// << 183 << 181;
+    // add waypoints here,to be visible on map
+    extraVisibleWaypoints << MAV_CMD_DO_SET_ROI;
+
     if( extraVisibleWaypoints.contains(action) )
         return true;
     else

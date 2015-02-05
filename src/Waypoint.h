@@ -126,6 +126,7 @@ public:
     }
     /** @brief Returns true if x, y, z contain reasonable navigation data */
     bool isNavigationType();
+    /** @brief Returns true for waypoint witch also visible on map */
     bool visibleOnMapWidget();
 
     void save(QTextStream &saveStream);
